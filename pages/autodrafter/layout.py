@@ -1,8 +1,10 @@
 import dash_mantine_components as dmc
 from utils.helpers import iconify
-from dash  import dcc
+from dash  import dcc, html
 import dash_pdf
 from pages.autodrafter.formInputs import make_questions
+from pages.autodrafter.dct import dct_layout
+import dash_bootstrap_components as dbc
 
 
 def makeAccordion(metadata):
@@ -96,7 +98,7 @@ def makeAccordion(metadata):
                                 id='document-uploader',
                                 children=dmc.Stack(
                                     id='upload-content-area', 
-                                    miw=900,
+                                    w='50vw',
                                    m = 15,
                                     align='center',
                                     style = {'padding': '1rem 1rem 3.125rem'},
@@ -212,6 +214,123 @@ def makeAccordion(metadata):
                 ]
             )
         )
+# dct_layout = [
+#     html.Div(
+#         dbc.Button(
+#             "Select DCT Vendors to Import from Language Library",
+#             id="dct_button",
+#             color="secondary",
+#             style={"width": "100%"},
+#         )
+#     ),
+#     dbc.Modal(
+#         [
+#             dbc.ModalHeader(dbc.ModalTitle("DCT Vendor List")),
+#             dbc.ModalBody(
+#                 [
+
+#                 ]
+#             ),
+#             dbc.ModalFooter(
+#                 dbc.Button(
+#                     "Close",
+#                     id="dct_modal_close",
+#                     className="ms-auto",
+#                     n_clicks=0,
+#                 )
+#             ),
+#         ],
+#         id="dct_modal",
+#         size="xl",
+#         scrollable=True,
+#         is_open=False,
+#     ),
+# ]
+
+
+    dct_accordion =  dmc.AccordionItem(
+        value='dct',
+        children = [
+            dmc.AccordionControl(
+                pos = 'relative',
+                
+                icon=iconify(
+                    icon="fluent:form-multiple-48-regular",
+                    color='rgba(0, 167, 181, 1)',
+                    width=30
+                ),
+                py = 6,
+                children=[
+                    dmc.Text(
+                        'Select DCT Vendors to Import from Language Library', 
+                        size="md", 
+                        fw=900, 
+                        lh=2
+                    ),
+                    # dmc.Text(
+                    #     'This step allow you to uplad a word document to generate a draft', 
+                    #     size="sm", 
+                    #     fw=400, 
+                    #     c="dimmed",  
+                    #     w = '70%'
+                    # ),
+                    dmc.Box(
+                        w = '15%',
+                        m = 5,
+                        style = {'position':'absolute', 'right':'5px', 'top':'0'},
+                        children = [
+                            dmc.Flex(
+                                align='flex-end',
+                                gap=5,
+                                children = [
+                                    dmc.ActionIcon( 
+                                        iconify('lets-icons:done-duotone', color='green'),
+                                        id="dct-step-icon-progress", 
+                                        variant="light", 
+                                        radius=50, 
+                                        size=40, 
+                                        color='green',
+                                        style = { "transform": "translateY(20%)" }
+                                    ),
+                                    dmc.Box(
+                                        children = [
+                                            dmc.Group(
+                                                gap = 5,
+                                                children = [
+                                                    dmc.Text(
+                                                        '100%',
+                                                        fw='bold',  
+                                                        size = 'lg',  
+                                                        id='dct-step-percent-label'
+                                                    ), 
+                                                    dmc.Text(
+                                                        'Complete',  
+                                                        size = 'sm', 
+                                                        c = 'gray'
+                                                    )
+                                                ]
+                                            ),
+                                            dmc.Progress(
+                                                value=100, 
+                                                size="xs", 
+                                                radius = 20, 
+                                                color = 'green',
+                                                id="dct-step-percent-progress" 
+                                            )
+                                        ]
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                ]
+            ),
+            dmc.AccordionPanel(
+                dct_layout
+            )
+        ]
+    )
+        
 
     return dmc.Accordion(
         pt = '10px',
@@ -229,7 +348,7 @@ def makeAccordion(metadata):
         variant = "separated", 
         style = { 'overflow': 'Scroll', 'height': '90%'},
         value = 'upload',
-        children=accordionItems
+        children=accordionItems + [dct_accordion]
     )
 
 aside = dmc.Box(
@@ -317,7 +436,7 @@ bottomNavigation = dmc.Box(
         dmc.Center(
             className='theme-background',
             opacity=1,
-            pos='absolute', bottom=10, left=470, w=320, h=50,
+            pos='absolute', bottom=10, left=510, w=320, h=50,
             style = {
                 "boxShadow":"rgba(82, 36, 127, 0.1) 0px 4px 10px",
                 "borderRadius":"10px",

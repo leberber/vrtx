@@ -218,3 +218,5 @@ def form_progress(data):
     }
     
     return none_percentage
+
+
