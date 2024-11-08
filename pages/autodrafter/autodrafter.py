@@ -7,7 +7,7 @@ import uuid
 
 from dash import  ( 
     Output, Input, callback, State, ctx, ALL, set_props, no_update,
-    register_page, dcc
+    register_page, dcc, clientside_callback
 )
 
 import dash_mantine_components as dmc
@@ -15,7 +15,7 @@ from utils.helpers import iconify
 
 
 from pages.autodrafter.formInputs import  form_progress, prepare_metadata
-from pages.autodrafter.layout import makeAccordion, aside, bottomNavigation, preview_page
+from pages.autodrafter.layout import makeAccordion, aside, bottomNavigation, preview_page, highlight
 
 register_page(__name__, path="/")
 
@@ -41,10 +41,20 @@ layout = dmc.Box(
             gradient={"from": "#52247f", "to": "#00A7B5", "deg":0},
             style={"fontSize": 40},
         ),
+        highlight,
         preview_page,
         makeAccordion(metadata),
         aside,
         bottomNavigation,
+        dmc.Text(
+            pos='absolute',
+            bottom=0, 
+            right=10, 
+            c='dimmed', 
+            size='xs',
+            p =10,
+            children = ["This tool is powered by AI and should be used for testing purposes only."]
+        )
     ]
 )
 
@@ -64,19 +74,23 @@ layout = dmc.Box(
     Output("upload-content-area", "bg"),
     Output("name-of-uploaded-file", "children"),
     Output("generate-draft", "disabled"),
+    Output("regenerate-button", "disabled"),
     Output("download-button", "disabled"),
 
     Input({"type": "forms-user-inputs", "index": ALL}, "value"),
     Input('document-uploader', 'contents'),
+    Input('highlight', 'value'),
+    
     State('document-uploader', 'filename'),
     State('app-front-end-store', 'data'),
     # prevent_initial_call =True
 )
-def progress_callbakcs(values, content, file_name, store):
+def progress_callbakcs(values, content, highlight, file_name, store):
 
     input_dict = {item['id']['index']: item['value'] for item in ctx.inputs_list[0]}
     store['user_inputs'] = input_dict
     store['uploded_docx_content'] = content
+    store['highlight'] = highlight
     set_props("app-front-end-store", {'data': store})
 
     d = list(form_progress(input_dict).values())
@@ -99,7 +113,6 @@ def progress_callbakcs(values, content, file_name, store):
 
     colors = ['green' if icon ==100 else 'red' for icon in progress  ]
 
-    
     upload_progress_label ='0%' if not content else '100%'
     upload_progress_value = 0 if not content else 100
 
@@ -107,7 +120,6 @@ def progress_callbakcs(values, content, file_name, store):
     name_file = file_name if file_name else 'Drag and drop files here to upload.'
     generate_button_state = True  if total !=100 else False
     
-   
     upload_progress_icon =iconify('material-symbols-light:wifi-tethering-rounded', rotate=3) if not content else iconify('lets-icons:done-duotone', color='green') 
     upload_progress_color ='red' if not content else 'green'
     total_progress = [{'value': total, 'color': total_color}]
@@ -128,20 +140,52 @@ def progress_callbakcs(values, content, file_name, store):
         upload_bg,
         name_file,
         generate_button_state,
+        generate_button_state,
         generate_button_state
     ]
 
+
+clientside_callback(
+    """function updateLoadingState(n_clicks) {
+    const no_update = window.dash_clientside.no_update
+    if (!n_clicks){
+        return no_update
+    }
+    return true
+    }
+    """,
+    Output("generate-draft", "loading"),
+    Input("generate-draft", "n_clicks"),
+    prevent_intial_call = True
+)
+
+clientside_callback(
+    """function openModalAndTriggerLoadding(n_clicks) {
+    const no_update = window.dash_clientside.no_update
+    if (!n_clicks){
+        return no_update
+    }
+    return [true, true]
+    }
+    """,
+    Output("loading-overlay", "visible"),
+    Output("preview-pdf-modal", "opened"),
+    Input("generate-draft", "n_clicks"),
+    Input("regenerate-button", "n_clicks"),
+    prevent_intial_call = True
+)
+
 @callback(
     Output("pdf-viewer", "data"),
-    Output("preview-pdf-modal", "opened"),
     Input('generate-draft', 'n_clicks'),
+    Input('regenerate-button', 'n_clicks'),
     State('app-front-end-store', 'data'),
-    State("preview-pdf-modal", "opened"),
+    
     prevent_initial_call =True
 )
-def update_user_initials(genarate, store, opened):
-
-    # return f"", True
+def back_end_call(genarate, regenarate, store):
+    import time
+    time.sleep(10)
 
     def convert_word_to_pdf(input_path):
         command = [
@@ -176,10 +220,15 @@ def update_user_initials(genarate, store, opened):
     os.remove(f"{uuid_file_name}.pdf")
 
     pdf_base64 = base64.b64encode(pdf_bytes).decode("utf-8")
-    return f"data:application/pdf;base64,{pdf_base64}", True
+    set_props("loading-overlay", { "visible": False})
+    set_props("generate-draft", { "loading": False})
+
+    # store.pop("generated_docx_content", None)  # `None` avoids KeyError if key isn't found
+    # store.pop("uploded_docx_content", None)
+    # print(store)
+
+    return f"data:application/pdf;base64,{pdf_base64}"
     
-
-
 @callback(
     Output("download-word-docx", "data"),
     Input("download-button", "n_clicks"),
@@ -196,7 +245,6 @@ def func(n_clicks, store):
 
 @callback(
     Input("preview-draft", "n_clicks"),
-    # State("app-front-end-store", "data"),
     State("preview-pdf-modal", "opened"),
     prevent_initial_call=True,
 )

@@ -53,15 +53,21 @@
     position: absolute; 
     bottom: 10px;
     display: flex;
-    left:calc(50% - 300px);
+    left:calc(50% - 400px);
     box-shadow: rgba(82, 36, 127, 0.3) 0px 4px 10px; 
     border-radius: 20px;
     padding-left: 20px;
-    width: 580px;
+    width: 780px;
     align-items: center;
   }
   
   .pdf-pagination-label{
     margin-right: 50px;
     min-width: 100px;
+  }
+
+  .react-pdf__Page__canvas{
+    box-shadow:rgba(0, 0, 0, 0.1) 0px 1px 2px 1px;
+    border-radius: 20px;
+    /* max-height: 780px; */
   }

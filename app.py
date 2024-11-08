@@ -109,7 +109,7 @@ app.layout = dmc.MantineProvider(
                                         dmc.Text('john.doe@vrtx.com', c='gray', size='sm', lh=1.2),
                                     ]
                                 ),
-                                    dmc.SegmentedControl(
+                                dmc.SegmentedControl(
                                     id="color-scheme-toggle",
                                     value="Light",
                                     size = 'xs',

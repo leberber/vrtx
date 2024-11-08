@@ -84,17 +84,18 @@ def makeAccordion(metadata):
                 dmc.AccordionPanel(
                     dmc.Center(
                         # pt = 40,
-                        pb = 60,
+                        pb = 30,
                         children = [
                             dcc.Upload(
                                 style = {
                                     'border': '1px dashed rgb(206, 212, 218)',  
-                                    'borderRadius': '5px', 'maxWidth': '420px'
+                                    'borderRadius': '5px', 
                                 },
                                 id='document-uploader',
                                 children=dmc.Stack(
                                     id='upload-content-area', 
-                                    miw=300,
+                                    miw=900,
+                                   m = 15,
                                     align='center',
                                     style = {'padding': '1rem 1rem 3.125rem'},
                                     children=[
@@ -106,6 +107,7 @@ def makeAccordion(metadata):
                                         dmc.Text(
                                             'Drag and drop files here to upload.', 
                                             className='upload-text', 
+                                            
                                             id='name-of-uploaded-file'
                                         ),
                                         dmc.Button(
@@ -232,7 +234,7 @@ aside = dmc.Box(
         "position": "absolute",
         "borderRadius": "10px",
         "top":'22%',
-        "bottom":20,
+        "bottom":40,
         "right":20,
         "boxShadow":"rgba(0, 0, 0, 0.04) 0px 3px 5px"
     },
@@ -274,14 +276,41 @@ aside = dmc.Box(
         )
     ]
 )
-
+highlight =  dmc.Group(
+    pos='absolute', bottom=20, right='10', p =10,
+    style = {  
+        "boxShadow":"rgba(82, 36, 127, 0.1) 0px 4px 10px",
+        "borderRadius":"10px"
+    },
+    children = [
+        dmc.Text("Highlight"),
+        dmc.SegmentedControl(
+            id = 'highlight',
+            value="OFF",
+            size = 'xs',
+            radius = 15,
+            px = 10,
+  
+            data=[
+                {
+                    "value": 'OFF',
+                    "label": "OFF"
+                },
+                {
+                    "value": 'ON',
+                    "label": "ON"
+                }
+            ]
+        )
+    ]
+)
 bottomNavigation = dmc.Center(
     className='theme-background',
     opacity=1,
-    pos='absolute', bottom=20, right='50%', w=400, h=60,
+    pos='absolute', bottom=20, right='50%', w=320, h=60,
     style = {
         "boxShadow":"rgba(82, 36, 127, 0.1) 0px 4px 10px",
-        "borderRadius":"20px",
+        "borderRadius":"10px",
         "transform": "translateX(18%)",
         "zIndex":20000,
         "opacity":1,
@@ -312,11 +341,15 @@ preview_page =  dmc.Modal(
     id="preview-pdf-modal",
     styles={
         'header':{'minHeight':0, 'minHeight':0, 'padding':0},
-        'close':{'position':'absolute', 'right':10, 'top':10}
+        'close':{'position':'absolute', 'left':10, 'top':10, 'width':70, 'height':30}
     },
     centered=True,
     fullScreen=True,
     zIndex = 200000,
+    closeButtonProps = {
+        'icon':iconify('eva:arrow-back-outline', width=25 ),
+        'children':   dmc.Text('Back', size= 'lg')
+    },
     children=[
         dmc.Box(
             pt= 20,
@@ -326,25 +359,57 @@ preview_page =  dmc.Modal(
             style= {"textAlign":"center"},
             children = [
                 dmc.Center(
-                    dash_pdf.PDF(
-                        id='pdf-viewer',
-                        data='',
-                        buttonClassName="pdf-pagination-buttons",
-                        labelClassName="pdf-pagination-label",
-                        controlsClassName="pdf-pagination-controls",
-                    )
+                    h = 'calc(100% - 100px)',
+                    p = 0,
+                    mx='25%',
+                    
+                    # style={'border':'2px solid red'},
+                    children = [
+                    dmc.LoadingOverlay(
+                        visible=False,
+                        id="loading-overlay",
+                        overlayProps={"radius": "sm", "blur": 0.1},
+                        loaderProps={
+                        "variant": "custom",
+                        "children": dmc.Image(
+                            h=150,
+                            radius="md",
+                            src="/assets/Loader.gif",
+                        ),
+                    },
+                        zIndex=10,
+                    ),
+                        dash_pdf.PDF(
+                            id='pdf-viewer',
+                            data='',
+                            buttonClassName="pdf-pagination-buttons",
+                            labelClassName="pdf-pagination-label",
+                            controlsClassName="pdf-pagination-controls",
+                        )
+                    ]
                 ),
                 dmc.Button(
                     "Download",
                     pos = 'absolute',
-                    right='calc(50% - 250px)', 
+                    right='calc(50% - 177px)', 
                     bottom=20, 
                     variant="outline",
                     id ='download-button',
                     leftSection=iconify(
                         icon="solar:download-minimalistic-linear", 
                         width= 20
-                    ),
+                    )
+                ),
+                dmc.Button(
+                    "Re-Generate",
+                    pos = 'absolute',
+                    right='calc(50% - 350px)', 
+                    styles={'label':{'fontSize':'18px'}, 'section':{'margin':2}},
+                    bottom=20, 
+                    color='green', 
+                    size="sm",
+                    id ='regenerate-button',
+                    leftSection=iconify(icon="uis:process", width=20), 
                 )
             ]
         )
