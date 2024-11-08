@@ -13,11 +13,13 @@ def makeAccordion(metadata):
             children = [
                 dmc.AccordionControl(
                     pos = 'relative',
+                    
                     icon=iconify(
                         icon="cuida:upload-outline",
                         color='rgba(0, 167, 181, 1)',
                         width=30
                     ),
+                    py = 6,
                     children=[
                         dmc.Text(
                             'Upload Word Document', 
@@ -25,13 +27,13 @@ def makeAccordion(metadata):
                             fw=900, 
                             lh=2
                         ),
-                        dmc.Text(
-                            'This step allow you to uplad a word document to generate a draft', 
-                            size="sm", 
-                            fw=400, 
-                            c="dimmed",  
-                            w = '70%'
-                        ),
+                        # dmc.Text(
+                        #     'This step allow you to uplad a word document to generate a draft', 
+                        #     size="sm", 
+                        #     fw=400, 
+                        #     c="dimmed",  
+                        #     w = '70%'
+                        # ),
                         dmc.Box(
                             w = '15%',
                             m = 5,
@@ -137,6 +139,7 @@ def makeAccordion(metadata):
                 children = [
                     dmc.AccordionControl(
                         pos = 'relative',
+                        py = 6,
                         icon=iconify(
                             icon=step['stepIcon'],
                             color='rgba(0, 167, 181, 1)',
@@ -212,7 +215,7 @@ def makeAccordion(metadata):
 
     return dmc.Accordion(
         pt = '10px',
-        pb = '20px',
+        pb = '70px',
         chevron = None,
         id='checkbox-filters-accordion',
         styles = {
@@ -234,7 +237,7 @@ aside = dmc.Box(
         "position": "absolute",
         "borderRadius": "10px",
         "top":'22%',
-        "bottom":40,
+        "bottom":85,
         "right":20,
         "boxShadow":"rgba(0, 0, 0, 0.04) 0px 3px 5px"
     },
@@ -276,66 +279,88 @@ aside = dmc.Box(
         )
     ]
 )
-highlight =  dmc.Group(
-    pos='absolute', bottom=20, right='10', p =10,
+bottomNavigation = dmc.Box(
+    pos='fixed', bottom=0, right=0, left=0, h=70, bg = 'white',
     style = {  
         "boxShadow":"rgba(82, 36, 127, 0.1) 0px 4px 10px",
-        "borderRadius":"10px"
+        "zIndex":200,
     },
     children = [
-        dmc.Text("Highlight"),
-        dmc.SegmentedControl(
-            id = 'highlight',
-            value="OFF",
-            size = 'xs',
-            radius = 15,
-            px = 10,
-  
-            data=[
-                {
-                    "value": 'OFF',
-                    "label": "OFF"
-                },
-                {
-                    "value": 'ON',
-                    "label": "ON"
-                }
+        dmc.Group(
+            pos='absolute', bottom=10, left=10, p =10,
+            style = {  
+                "boxShadow":"rgba(82, 36, 127, 0.1) 0px 4px 10px",
+                "borderRadius":"10px",
+                "zIndex":20000000
+            },
+            children = [
+                dmc.Text("Highlight"),
+                dmc.SegmentedControl(
+                    id = 'highlight',
+                    value="OFF",
+                    size = 'xs',
+                    radius = 15,
+                    px = 10,
+                    data=[
+                        {
+                            "value": 'OFF',
+                            "label": "OFF"
+                        },
+                        {
+                            "value": 'ON',
+                            "label": "ON"
+                        }
+                    ]
+                )
             ]
-        )
-    ]
-)
-bottomNavigation = dmc.Center(
-    className='theme-background',
-    opacity=1,
-    pos='absolute', bottom=20, right='50%', w=320, h=60,
-    style = {
-        "boxShadow":"rgba(82, 36, 127, 0.1) 0px 4px 10px",
-        "borderRadius":"10px",
-        "transform": "translateX(18%)",
-        "zIndex":20000,
-        "opacity":1,
-        },
-    children=[
-        dmc.Button(
-            "Preview",    
-            variant="outline", 
-            leftSection=iconify(icon="icon-park-outline:preview-open", width=20), 
-            styles={'label':{'fontSize':'18px'}, 'section':{'margin':2}}, 
-            id='preview-draft', 
-            color='blue', 
-            mr=20,  
-            size="sm"
+        ), 
+        dmc.Center(
+            className='theme-background',
+            opacity=1,
+            pos='absolute', bottom=10, left=470, w=320, h=50,
+            style = {
+                "boxShadow":"rgba(82, 36, 127, 0.1) 0px 4px 10px",
+                "borderRadius":"10px",
+                "transform": "translateX(18%)",
+                "zIndex":20000,
+                "opacity":1,
+                },
+            children=[
+                dmc.Button(
+                    "Preview",    
+                    variant="outline", 
+                    leftSection=iconify(icon="icon-park-outline:preview-open", width=20), 
+                    styles={'label':{'fontSize':'18px'}, 'section':{'margin':2}}, 
+                    id='preview-draft', 
+                    color='blue', 
+                    mr=20,  
+                    size="sm"
+                ),
+                dmc.Button(
+                    "Generate",  
+                    leftSection=iconify(icon="uis:process", width=20),  
+                    styles={'label':{'fontSize':'18px'}, 'section':{'margin':2}},
+                    id='generate-draft', 
+                    color='green', 
+                    size="sm"
+                ),  
+            ]
         ),
-        dmc.Button(
-            "Generate",  
-            leftSection=iconify(icon="uis:process", width=20),  
-            styles={'label':{'fontSize':'18px'}, 'section':{'margin':2}},
-            id='generate-draft', 
-            color='green', 
-            size="sm"
-        ),  
+        dmc.Text(
+            pos='absolute',
+            bottom=0, 
+            right=10, 
+            c='dimmed', 
+            size='xs',
+            p =10,
+            children = ["This tool is powered by AI and should be used for testing purposes only."]
+        )
+
     ]
+
 )
+
+
 
 preview_page =  dmc.Modal(
     id="preview-pdf-modal",

@@ -143,6 +143,7 @@ def chip(item_dict, multiple=False):
 def textinput(item_dict):
     myInput =  dmc.TextInput( 
         ml = 20,
+        value=None,
         id={'type':'forms-user-inputs', 'index':f"{item_dict['stepID']}_{item_dict['questionID']}"},
         placeholder=item_dict['value']
     )
@@ -182,8 +183,9 @@ def make_questions (step):
         spacing={"base": 10, "sm": "xl"},
         verticalSpacing={"base": "md", "sm": "xl"},
         children=[
-            dmc.Box(l[:half],  p = 10, style = {"boxShadow": "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px", "borderRadius":10}),
-            dmc.Box(l[half:], p = 10, style = {"boxShadow": "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px", "borderRadius":15})
+            dmc.Box(l[half:], p = 10, style = {"boxShadow": "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px", "borderRadius":15}),
+            dmc.Box(l[:half],  p = 10, style = {"boxShadow": "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px", "borderRadius":15}),
+            
         ],
     )
     

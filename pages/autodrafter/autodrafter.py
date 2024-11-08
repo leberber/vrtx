@@ -15,11 +15,11 @@ from utils.helpers import iconify
 
 
 from pages.autodrafter.formInputs import  form_progress, prepare_metadata
-from pages.autodrafter.layout import makeAccordion, aside, bottomNavigation, preview_page, highlight
+from pages.autodrafter.layout import makeAccordion, aside, bottomNavigation, preview_page
 
 register_page(__name__, path="/")
 
-df = pd.read_csv('metadata.csv')
+df = pd.read_csv('metadata_updated.csv')
 
 metadata= prepare_metadata(df)
 
@@ -41,20 +41,12 @@ layout = dmc.Box(
             gradient={"from": "#52247f", "to": "#00A7B5", "deg":0},
             style={"fontSize": 40},
         ),
-        highlight,
+
         preview_page,
         makeAccordion(metadata),
         aside,
         bottomNavigation,
-        dmc.Text(
-            pos='absolute',
-            bottom=0, 
-            right=10, 
-            c='dimmed', 
-            size='xs',
-            p =10,
-            children = ["This tool is powered by AI and should be used for testing purposes only."]
-        )
+
     ]
 )
 
